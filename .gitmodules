@@ -1,0 +1,12 @@
+[submodule "NURU/vendor/GLFW"]
+	path = NURU/vendor/GLFW
+	url = https://github.com/endevagames/glfw.git
+[submodule "NURU/vendor/ImGui"]
+	path = NURU/vendor/ImGui
+	url = https://github.com/endevagames/imgui.git
+[submodule "NURU/vendor/SpdLog"]
+	path = NURU/vendor/SpdLog
+	url = https://github.com/gabime/spdlog
+[submodule "NURU/vendor/Assimp"]
+	path = NURU/vendor/Assimp
+	url = https://github.com/endevagames/assimp.git
