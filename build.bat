@@ -1,0 +1,1 @@
+rm -r ./bin/%1-windows-x86_64/Sandbox/data && cp -r Assets/data ./bin/%1-windows-x86_64/Sandbox/ && msbuild ProjectIris.sln /property:Configuration=%1

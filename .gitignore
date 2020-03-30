@@ -1,0 +1,10 @@
+#directories
+.vscode/
+.vs/
+
+#binaries
+bin/
+
+#project files
+*.sln
+*.vcxproj*
