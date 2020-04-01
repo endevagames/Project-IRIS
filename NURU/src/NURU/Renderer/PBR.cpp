@@ -121,7 +121,7 @@ namespace NURU
         m_PBRHdrToCubemap->SetTexture("environment", envMap, 0);
         TextureCube hdrEnvMap;
         hdrEnvMap.DefaultInitialize(128, 128, GL_RGB, GL_FLOAT);
-        m_Renderer->renderToCubemap(m_SceneEnvCube, &hdrEnvMap);
+        m_Renderer->RenderToCubemap(m_SceneEnvCube, &hdrEnvMap);
 
         return ProcessCube(&hdrEnvMap);
     }
@@ -135,7 +135,7 @@ namespace NURU
         captureProbe->Irradiance->DefaultInitialize(32, 32, GL_RGB, GL_FLOAT);
         m_PBRIrradianceCapture->SetTextureCube("environment", capture, 0);
         m_SceneEnvCube->Material = m_PBRIrradianceCapture;
-        m_Renderer->renderToCubemap(m_SceneEnvCube, captureProbe->Irradiance, Vec3(0.0f), 0);
+        m_Renderer->RenderToCubemap(m_SceneEnvCube, captureProbe->Irradiance, Vec3(0.0f), 0);
         // prefilter 
         if (prefilter)
         {
@@ -149,7 +149,7 @@ namespace NURU
             for (unsigned int i = 0; i < maxMipLevels; ++i)
             {
                 m_PBRPrefilterCapture->SetFloat("roughness", (float)i / (float)(maxMipLevels - 1));
-                m_Renderer->renderToCubemap(m_SceneEnvCube, captureProbe->Prefiltered, Vec3(0.0f), i);
+                m_Renderer->RenderToCubemap(m_SceneEnvCube, captureProbe->Prefiltered, Vec3(0.0f), i);
 
             }
         }
@@ -191,7 +191,7 @@ namespace NURU
         // first render the sky capture
         m_ProbeDebugShader->SetVector("Position", Vec3(0.0f, 2.0, 0.0f));
         m_SkyCapture->Prefiltered->Bind(0);
-        m_Renderer->renderMesh(m_ProbeDebugSphere, m_ProbeDebugShader);
+        m_Renderer->RenderMesh(m_ProbeDebugSphere, m_ProbeDebugShader);
 
         // then do the same for each capture probe (at their respective location)
         for (int i = 0; i < m_CaptureProbes.size(); ++i)
@@ -205,7 +205,7 @@ namespace NURU
             {
                 m_CaptureProbes[i]->Irradiance->Bind(0);
             }
-            m_Renderer->renderMesh(m_ProbeDebugSphere, m_ProbeDebugShader);
+            m_Renderer->RenderMesh(m_ProbeDebugSphere, m_ProbeDebugShader);
         }
     }
 }

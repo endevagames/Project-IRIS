@@ -192,7 +192,7 @@ namespace NURU
             glBindFramebuffer(GL_FRAMEBUFFER, m_SSAORenderTarget->ID);
             glViewport(0, 0, m_SSAORenderTarget->Width, m_SSAORenderTarget->Height);
             glClear(GL_COLOR_BUFFER_BIT);
-            renderer->renderMesh(renderer->m_NDCPlane, m_SSAOShader);
+            renderer->RenderMesh(renderer->m_NDCPlane, m_SSAOShader);
         }
     }
     // --------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ namespace NURU
             glBindFramebuffer(GL_FRAMEBUFFER, m_BloomRenderTarget0->ID);
             glViewport(0, 0, m_BloomRenderTarget0->Width, m_BloomRenderTarget0->Height);
             glClear(GL_COLOR_BUFFER_BIT);
-            renderer->renderMesh(renderer->m_NDCPlane, m_BloomShader);
+            renderer->RenderMesh(renderer->m_NDCPlane, m_BloomShader);
 
             // blur bloom result
             blur(renderer, m_BloomRenderTarget0->GetColorTexture(0), m_BloomRenderTarget1, 8);
@@ -255,7 +255,7 @@ namespace NURU
         m_PostProcessShader->SetFloat("MotionScale", ImGui::GetIO().Framerate / FPSTarget * 0.8);
         m_PostProcessShader->SetInt("MotionSamples", 16);
 
-        renderer->renderMesh(renderer->m_NDCPlane, m_PostProcessShader);               
+        renderer->RenderMesh(renderer->m_NDCPlane, m_PostProcessShader);               
     }
     // --------------------------------------------------------------------------------------------
     Texture* PostProcessor::downsample(Renderer* renderer, Texture* src, RenderTarget* dst)
@@ -266,7 +266,7 @@ namespace NURU
 
         src->Bind(0);
         m_DownSampleShader->Use();
-        renderer->renderMesh(renderer->m_NDCPlane, m_DownSampleShader);
+        renderer->RenderMesh(renderer->m_NDCPlane, m_DownSampleShader);
 
         // output resulting (downsampled) texture
         return dst->GetColorTexture(0);
@@ -318,7 +318,7 @@ namespace NURU
                 rtHorizontal->GetColorTexture(0)->Bind(0);
             }
             glBindFramebuffer(GL_FRAMEBUFFER, horizontal ? rtHorizontal->ID : rtVertical->ID);
-            renderer->renderMesh(renderer->m_NDCPlane, m_OnePassGaussianShader);
+            renderer->RenderMesh(renderer->m_NDCPlane, m_OnePassGaussianShader);
         }
 
         // output resulting (blurred) texture

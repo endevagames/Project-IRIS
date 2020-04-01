@@ -32,6 +32,7 @@ namespace NURU
     class MaterialLibrary;
     class PBR;
     class PostProcessor;
+    class Application;
 
     /*
 
@@ -44,6 +45,7 @@ namespace NURU
     {
         friend PostProcessor;
         friend PBR;
+        friend Application;
     public:
         // configuration
         bool IrradianceGI = true;
@@ -136,26 +138,30 @@ namespace NURU
         void        BakeProbes(SceneNode* scene = nullptr);
     private:
         // renderer-specific logic for rendering a custom (forward-pass) command
-        void renderCustomCommand(RenderCommand* command, Camera* customCamera, bool updateGLSettings = true);
+        void RenderCustomCommand(RenderCommand* command, Camera* customCamera, bool updateGLSettings = true);
         // renderer-specific logic for rendering a list of commands to a target cubemap
-        void renderToCubemap(SceneNode* scene, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
-        void renderToCubemap(std::vector<RenderCommand>& renderCommands, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
+        void RenderToCubemap(SceneNode* scene, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
+        void RenderToCubemap(std::vector<RenderCommand>& renderCommands, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
         // minimal render logic to render a mesh 
-        void renderMesh(Mesh* mesh, Shader* shader);
+        void RenderMesh(Mesh* mesh, Shader* shader);
         // updates the global uniform buffer objects
-        void updateGlobalUBOs();
+        void UpdateGlobalUBOs();
         // returns the currently active render target
-        RenderTarget* getCurrentRenderTarget();
+        RenderTarget* GetCurrentRenderTarget();
 
         // deferred logic:
         // renders all ambient lighting (including indirect IBL)
-        void renderDeferredAmbient();
+        void RenderDeferredAmbient();
         // render directional light
-        void renderDeferredDirLight(DirectionalLight* light);
+        void RenderDeferredDirLight(DirectionalLight* light);
         // render point light
-        void renderDeferredPointLight(PointLight* light);
+        void RenderDeferredPointLight(PointLight* light);
 
         // render mesh for shadow buffer generation
-        void renderShadowCastCommand(RenderCommand* command, const Mat4& projection, const Mat4& view);
+        void RenderShadowCastCommand(RenderCommand* command, const Mat4& projection, const Mat4& view);
+
+        // Frame Rendering
+        void NewFrame();
+        void EndFrame();
     };
 }

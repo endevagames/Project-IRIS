@@ -1,5 +1,7 @@
 #include "NURUPCH.h"
 
+#include "NURU/Core/Input.h"
+
 #include "FlyCamera.h"
 #include "Math/NURUMath.h"
 
@@ -19,21 +21,24 @@ namespace NURU
     // --------------------------------------------------------------------------------------------
     void FlyCamera::Update(float dt)
     {
+        // Update using base class method
+        dt = 1.0f;
 		Camera::Update(dt);
+    
 		// slowly interpolate to target position each frame given some damping factor.
 		// this gives smooth camera movement that fades out the closer we are to our target.
-		Position = NURU::Lerp(Position, m_TargetPosition, NURU::Clamp01(dt * Damping));
-		Yaw      = NURU::Lerp(Yaw, m_TargetYaw, NURU::Clamp01(dt * Damping * 2.0f));
-		Pitch    = NURU::Lerp(Pitch, m_TargetPitch, NURU::Clamp01(dt * Damping * 2.0f));
+		Position = Lerp(Position, m_TargetPosition, Clamp01(dt * Damping));
+		Yaw      = Lerp(Yaw, m_TargetYaw, Clamp01(dt * Damping * 2.0f));
+		Pitch    = Lerp(Pitch, m_TargetPitch, Clamp01(dt * Damping * 2.0f));
 
 		// calculate new cartesian basis vectors from yaw/pitch pair:
 		Vec3 newForward;
 		newForward.x = cos(0.0174533 * Pitch) * cos(0.0174533 * Yaw);
 		newForward.y = sin(0.0174533 * Pitch);
 		newForward.z = cos(0.0174533 * Pitch) * sin(0.0174533 * Yaw);
-		Forward = NURU::Normalize(newForward);
-		Right = NURU::Normalize(NURU::Cross(Forward, m_WorldUp));
-		Up = NURU::Cross(Right, Forward);
+		Forward      = Normalize(newForward);
+		Right        = Normalize(NURU::Cross(Forward, m_WorldUp));
+		Up           = Cross(Right, Forward);
 
 		// calculate the new view matrix
 		UpdateView();

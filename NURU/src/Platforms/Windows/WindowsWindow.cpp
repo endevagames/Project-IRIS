@@ -7,7 +7,8 @@
 #include "NURU/Events/KeyEvent.h"
 #include "NURU/Events/MouseEvent.h"
 
-namespace NURU {
+namespace NURU 
+{
     
     static bool s_GLFWInitialized = false;
 
@@ -39,15 +40,16 @@ namespace NURU {
 
 		NURU_CORE_INFO("Creating Window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
-		if (!s_GLFWInitialized) {
+		if (!s_GLFWInitialized) 
+		{
 			int success = glfwInit();
 			NURU_CORE_ASSERT(success, "Could not initialize GLFW");
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
 
+		glfwWindowHint(GLFW_MAXIMIZED, true);
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		glfwMaximizeWindow(m_Window);
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		
@@ -173,5 +175,13 @@ namespace NURU {
 	inline void* WindowsWindow :: GetNativeWindow() const 
 	{
 		return m_Window;
+	}
+
+	double WindowsWindow :: UpdateDeltaTime()
+	{
+        double currentFrameTime = glfwGetTime();
+        DeltaTime     = currentFrameTime - LastFrameTime;
+        LastFrameTime = currentFrameTime;
+		return DeltaTime;
 	}
 }

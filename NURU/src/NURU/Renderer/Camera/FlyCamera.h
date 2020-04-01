@@ -27,6 +27,7 @@ namespace NURU
 		Vec3 m_WorldUp;
         float m_TargetYaw;
         float m_TargetPitch;
+        bool firstMouse = true;
 	
     public:
         FlyCamera(Vec3 position, Vec3 forward = Vec3(0.0f, 0.0f, -1.0f), Vec3 up = Vec3(0.0f, 1.0f, 0.0f));

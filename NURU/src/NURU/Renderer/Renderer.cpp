@@ -202,7 +202,7 @@ namespace NURU
     void Renderer::PushRender(Mesh* mesh, Material* material, Mat4 transform, Mat4 prevFrameTransform)
     {
         // get current render target
-        RenderTarget* target = getCurrentRenderTarget();
+        RenderTarget* target = GetCurrentRenderTarget();
         // don't render right away but push to the command buffer for later rendering.
         m_CommandBuffer->Push(mesh, material, transform, prevFrameTransform, Vec3(-99999.0f), Vec3(99999.0f), target);
     }
@@ -213,7 +213,7 @@ namespace NURU
         node->UpdateTransform(true);
 
         // get current render target
-        RenderTarget* target = getCurrentRenderTarget();
+        RenderTarget* target = GetCurrentRenderTarget();
         // traverse through all the scene nodes and for each node: push its render state to the 
         // command buffer together with a calculated transform matrix.
         std::stack<SceneNode*> nodeStack;
@@ -278,7 +278,7 @@ namespace NURU
         m_CommandBuffer->Sort();
 
         // update (global) uniform buffers
-        updateGlobalUBOs();
+        UpdateGlobalUBOs();
 
         // set default GL state
         m_GLCache.SetBlend(false);
@@ -297,7 +297,7 @@ namespace NURU
         m_GLCache.SetPolygonMode(Wireframe ? GL_LINE : GL_FILL);
         for (unsigned int i = 0; i < deferredRenderCommands.size(); ++i)
         {
-            renderCustomCommand(&deferredRenderCommands[i], nullptr, false);
+            RenderCustomCommand(&deferredRenderCommands[i], nullptr, false);
         }
         m_GLCache.SetPolygonMode(GL_FILL);
 
@@ -332,7 +332,7 @@ namespace NURU
                     m_DirectionalLights[i]->ShadowMapRT = m_ShadowRenderTargets[shadowRtIndex];
                     for (int j = 0; j < shadowRenderCommands.size(); ++j)
                     {
-                        renderShadowCastCommand(&shadowRenderCommands[j], lightProjection, lightView);
+                        RenderShadowCastCommand(&shadowRenderCommands[j], lightProjection, lightView);
                     }
                     ++shadowRtIndex;
                 }
@@ -360,14 +360,14 @@ namespace NURU
         m_GBuffer->GetColorTexture(2)->Bind(2);
         
         // ambient lighting
-        renderDeferredAmbient();
+        RenderDeferredAmbient();
 
         if (Lights)
         {
             // directional lights
             for (auto it = m_DirectionalLights.begin(); it != m_DirectionalLights.end(); ++it)
             {
-                renderDeferredDirLight(*it);
+                RenderDeferredDirLight(*it);
             }
             // point lights
             m_GLCache.SetCullFace(GL_FRONT);
@@ -376,7 +376,7 @@ namespace NURU
                 // only render point lights if within frustum
                 if (m_Camera->Frustum.Intersect((*it)->Position, (*it)->Radius))
                 {
-                    renderDeferredPointLight(*it);
+                    RenderDeferredPointLight(*it);
                 }
             }
             m_GLCache.SetCullFace(GL_BACK);
@@ -429,7 +429,7 @@ namespace NURU
             m_GLCache.SetPolygonMode(Wireframe ? GL_LINE : GL_FILL);
             for (unsigned int i = 0; i < renderCommands.size(); ++i)
             {
-                renderCustomCommand(&renderCommands[i], nullptr);
+                RenderCustomCommand(&renderCommands[i], nullptr);
             }
             m_GLCache.SetPolygonMode(GL_FILL);
         }
@@ -440,7 +440,7 @@ namespace NURU
         std::vector<RenderCommand> alphaRenderCommands = m_CommandBuffer->GetAlphaRenderCommands(true);
         for (unsigned int i = 0; i < alphaRenderCommands.size(); ++i)
         {
-            renderCustomCommand(&alphaRenderCommands[i], nullptr);
+            RenderCustomCommand(&alphaRenderCommands[i], nullptr);
         }
 
         // render light mesh (as visual cue), if requested
@@ -458,7 +458,7 @@ namespace NURU
                 NURU::Scale(model, Vec3(0.25f));
                 command.Transform = model;
 
-                renderCustomCommand(&command, nullptr);
+                RenderCustomCommand(&command, nullptr);
             }
         }
 
@@ -484,7 +484,7 @@ namespace NURU
                 NURU::Scale(model, Vec3((*it)->Radius));
                 command.Transform = model;
 
-                renderCustomCommand(&command, nullptr);
+                RenderCustomCommand(&command, nullptr);
             }
             m_GLCache.SetPolygonMode(GL_FILL);
             m_GLCache.SetCullFace(GL_BACK);
@@ -555,7 +555,7 @@ namespace NURU
         RenderCommand command;
         command.Material = material;
         command.Mesh = m_NDCPlane;
-        renderCustomCommand(&command, nullptr);
+        RenderCustomCommand(&command, nullptr);
     }   
     // ------------------------------------------------------------------------
     void Renderer::SetSkyCapture(PBRCapture* pbrEnvironment)
@@ -633,7 +633,7 @@ namespace NURU
             TextureCube renderResult;
             renderResult.DefaultInitialize(32, 32, GL_RGB, GL_FLOAT);
 
-            renderToCubemap(renderCommands, &renderResult, m_ProbeSpatials[i].xyz);
+            RenderToCubemap(renderCommands, &renderResult, m_ProbeSpatials[i].xyz);
 
             PBRCapture* capture = m_PBR->ProcessCube(&renderResult, false);
             m_PBR->AddIrradianceProbe(capture, m_ProbeSpatials[i].xyz, m_ProbeSpatials[i].w);
@@ -645,7 +645,7 @@ namespace NURU
         }
     }  
     // ------------------------------------------------------------------------
-    void Renderer::renderCustomCommand(RenderCommand* command, Camera* customCamera, bool updateGLSettings)
+    void Renderer::RenderCustomCommand(RenderCommand* command, Camera* customCamera, bool updateGLSettings)
     {
         Material *material = command->Material;
         Mesh     *mesh     = command->Mesh;
@@ -738,10 +738,10 @@ namespace NURU
             }
         }
 
-        renderMesh(mesh, material->GetShader());
+        RenderMesh(mesh, material->GetShader());
     }
     // ------------------------------------------------------------------------
-    void Renderer::renderToCubemap(SceneNode* scene,
+    void Renderer::RenderToCubemap(SceneNode* scene,
         TextureCube* target,
         Vec3   position,
         unsigned int mipLevel)
@@ -765,10 +765,10 @@ namespace NURU
         commandBuffer.Sort();
         std::vector<RenderCommand> renderCommands = commandBuffer.GetCustomRenderCommands(nullptr);
 
-        renderToCubemap(renderCommands, target, position, mipLevel);
+        RenderToCubemap(renderCommands, target, position, mipLevel);
     }
     // ------------------------------------------------------------------------
-    void Renderer::renderToCubemap(std::vector<RenderCommand>& renderCommands, TextureCube* target, Vec3 position, unsigned int mipLevel)
+    void Renderer::RenderToCubemap(std::vector<RenderCommand>& renderCommands, TextureCube* target, Vec3 position, unsigned int mipLevel)
     {
         // define 6 camera directions/lookup vectors
         Camera faceCameras[6] = {
@@ -805,12 +805,12 @@ namespace NURU
             {
                 // cubemap generation only works w/ custom materials 
                 assert(renderCommands[i].Material->Type == MATERIAL_CUSTOM);
-                renderCustomCommand(&renderCommands[i], camera);
+                RenderCustomCommand(&renderCommands[i], camera);
             }
         }
     }
     // --------------------------------------------------------------------------------------------
-    void Renderer::renderMesh(Mesh* mesh, Shader* shader)
+    void Renderer::RenderMesh(Mesh* mesh, Shader* shader)
     {
         glBindVertexArray(mesh->m_VAO);
         if (mesh->Indices.size() > 0)
@@ -823,7 +823,7 @@ namespace NURU
         }
     }
     // --------------------------------------------------------------------------------------------
-    void Renderer::updateGlobalUBOs()
+    void Renderer::UpdateGlobalUBOs()
     {
         glBindBuffer(GL_UNIFORM_BUFFER, m_GlobalUBO);
         // transformation matrices
@@ -848,12 +848,12 @@ namespace NURU
         }
     }
     // --------------------------------------------------------------------------------------------
-    RenderTarget* Renderer::getCurrentRenderTarget()
+    RenderTarget* Renderer::GetCurrentRenderTarget()
     {
         return m_CurrentRenderTargetCustom;
     }
     // --------------------------------------------------------------------------------------------
-    void Renderer::renderDeferredAmbient()
+    void Renderer::RenderDeferredAmbient()
     {
         PBRCapture* skyCapture = m_PBR->GetSkyCapture();
         auto irradianceProbes = m_PBR->m_CaptureProbes;
@@ -886,7 +886,7 @@ namespace NURU
                     NURU::Scale(model, Vec3(probe->Radius));
                     irradianceShader->SetMatrix("model", model);
 
-                    renderMesh(m_DeferredPointMesh, irradianceShader);
+                    RenderMesh(m_DeferredPointMesh, irradianceShader);
                 }
             }
             m_GLCache.SetCullFace(GL_BACK);
@@ -902,11 +902,11 @@ namespace NURU
             Shader* ambientShader = m_MaterialLibrary->deferredAmbientShader;
             ambientShader->Use();
             ambientShader->SetInt("SSAO", m_PostProcessor->SSAO);
-            renderMesh(m_NDCPlane, ambientShader);
+            RenderMesh(m_NDCPlane, ambientShader);
         }
     }
     // --------------------------------------------------------------------------------------------
-    void Renderer::renderDeferredDirLight(DirectionalLight* light)
+    void Renderer::RenderDeferredDirLight(DirectionalLight* light)
     {
         Shader* dirShader = m_MaterialLibrary->deferredDirectionalShader;
 
@@ -922,10 +922,10 @@ namespace NURU
             light->ShadowMapRT->GetDepthStencilTexture()->Bind(3);
         }
             
-        renderMesh(m_NDCPlane, dirShader);
+        RenderMesh(m_NDCPlane, dirShader);
     }
     // --------------------------------------------------------------------------------------------
-    void Renderer::renderDeferredPointLight(PointLight* light)
+    void Renderer::RenderDeferredPointLight(PointLight* light)
     {
         Shader *pointShader = m_MaterialLibrary->deferredPointShader;
 
@@ -940,10 +940,10 @@ namespace NURU
         NURU::Scale(model, Vec3(light->Radius));
         pointShader->SetMatrix("model", model);
 
-        renderMesh(m_DeferredPointMesh, pointShader);    
+        RenderMesh(m_DeferredPointMesh, pointShader);    
     }
     // --------------------------------------------------------------------------------------------
-    void Renderer::renderShadowCastCommand(RenderCommand* command, const Mat4& projection, const Mat4& view)
+    void Renderer::RenderShadowCastCommand(RenderCommand* command, const Mat4& projection, const Mat4& view)
     {
         Shader* shadowShader = m_MaterialLibrary->dirShadowShader;
 
@@ -951,6 +951,16 @@ namespace NURU
         shadowShader->SetMatrix("view", view);
         shadowShader->SetMatrix("model", command->Transform);
 
-        renderMesh(command->Mesh, shadowShader);
+        RenderMesh(command->Mesh, shadowShader);
+    }
+    // --------------------------------------------------------------------------------------------
+    void Renderer :: NewFrame()
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+    // --------------------------------------------------------------------------------------------
+    void Renderer :: EndFrame()
+    {
+        RenderPushedCommands();
     }
 }

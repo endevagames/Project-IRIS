@@ -8,14 +8,16 @@
 #include "NURU/Events/KeyEvent.h"
 #include "NURU/Renderer/Renderer.h"
 #include "NURU/ImGui/ImGuiLayer.h"
+#include "NURU/Renderer/Camera/FlyCamera.h"
 
-namespace NURU {
-
+namespace NURU 
+{
     class Application
     {
     private:
-        std::unique_ptr<Window> m_Window;
-        std::unique_ptr<Renderer> m_Renderer;
+        Scope<Window> m_Window;
+        Renderer* m_Renderer;
+        FlyCamera* m_Camera;
         bool m_Running = true;
     public:
         Application(/* args */);
@@ -33,6 +35,7 @@ namespace NURU {
     private:
         bool OnWindowClose(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
+
         static Application* s_Instance;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;

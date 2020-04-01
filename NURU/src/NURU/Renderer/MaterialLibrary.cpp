@@ -11,13 +11,13 @@
 namespace NURU
 {
     // --------------------------------------------------------------------------------------------
-    MaterialLibrary::MaterialLibrary(RenderTarget* gBuffer)
+    MaterialLibrary :: MaterialLibrary(RenderTarget* gBuffer)
     {
         generateDefaultMaterials();
         generateInternalMaterials(gBuffer);
     }
     // --------------------------------------------------------------------------------------------
-    MaterialLibrary::~MaterialLibrary()
+    MaterialLibrary :: ~MaterialLibrary()
     {
         for (auto it = m_DefaultMaterials.begin(); it != m_DefaultMaterials.end(); ++it)
         {
@@ -32,7 +32,7 @@ namespace NURU
         delete defaultBlitMaterial;
     }
     // --------------------------------------------------------------------------------------------
-    Material* MaterialLibrary::CreateMaterial(std::string base)
+    Material* MaterialLibrary :: CreateMaterial(std::string base)
     {
         auto found = m_DefaultMaterials.find(SID(base));
         if (found != m_DefaultMaterials.end())
@@ -49,7 +49,7 @@ namespace NURU
         }
     }
     // --------------------------------------------------------------------------------------------
-    Material* MaterialLibrary::CreateCustomMaterial(Shader* shader)
+    Material* MaterialLibrary :: CreateCustomMaterial(Shader* shader)
     {
         Material* mat = new Material(shader);
         mat->Type = MATERIAL_CUSTOM;
@@ -57,7 +57,7 @@ namespace NURU
         return mat;
     }
     // --------------------------------------------------------------------------------------------
-    Material* MaterialLibrary::CreatePostProcessingMaterial(Shader* shader)
+    Material* MaterialLibrary :: CreatePostProcessingMaterial(Shader* shader)
     {
         Material* mat = new Material(shader);
         mat->Type = MATERIAL_POST_PROCESS;
@@ -65,7 +65,7 @@ namespace NURU
         return mat;
     }
     // --------------------------------------------------------------------------------------------    
-    void MaterialLibrary::generateDefaultMaterials()
+    void MaterialLibrary :: generateDefaultMaterials()
     {
         // default render material (deferred path)
         Shader* defaultShader = Resources::LoadShader("default", "shaders/deferred/g_buffer.vs", "shaders/deferred/g_buffer.fs");
@@ -116,7 +116,7 @@ namespace NURU
         m_DefaultMaterials[SID("alpha discard")] = alphaDiscardMaterial;
     }
     // --------------------------------------------------------------------------------------------
-    void MaterialLibrary::generateInternalMaterials(RenderTarget *gBuffer)
+    void MaterialLibrary :: generateInternalMaterials(RenderTarget *gBuffer)
     {
         // post-processing
         Shader* defaultBlitShader = Resources::LoadShader("blit", "shaders/screen_quad.vs", "shaders/default_blit.fs");
