@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <Glad/glad.h>
 
 namespace NURU
 {

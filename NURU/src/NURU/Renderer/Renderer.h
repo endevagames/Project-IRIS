@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NURU/Core/Core.h"
+
 #include "Math/Linear/Vector.h"
 #include "Math/Linear/Matrix.h"
 
@@ -12,7 +14,7 @@
 #include "PBRCapture.h"
 #include "GLCache.h"
 
-#include <glad/glad.h>
+#include <Glad/glad.h>
 
 namespace NURU
 {
@@ -62,8 +64,8 @@ namespace NURU
         Vec2           m_RenderSize;
 
         // lighting
-        std::vector<DirectionalLight*> m_DirectionalLights;
-        std::vector<PointLight*>       m_PointLights;
+        List<DirectionalLight*> m_DirectionalLights;
+        List<PointLight*>       m_PointLights;
         RenderTarget* m_GBuffer = nullptr;
         Mesh*         m_DeferredPointMesh;
 
@@ -75,7 +77,7 @@ namespace NURU
         Mat4 m_PrevViewProjection;
 
         // render-targets/post
-        std::vector<RenderTarget*> m_RenderTargetsCustom;
+        List<RenderTarget*> m_RenderTargetsCustom;
         RenderTarget*              m_CurrentRenderTargetCustom = nullptr;
         RenderTarget*              m_CustomTarget;
         RenderTarget*              m_PostProcessTarget1;
@@ -85,13 +87,13 @@ namespace NURU
         unsigned int m_CubemapDepthRBO;
 
         // shadow buffers
-        std::vector<RenderTarget*> m_ShadowRenderTargets;
-        std::vector<Mat4>    m_ShadowViewProjections;
+        List<RenderTarget*> m_ShadowRenderTargets;
+        List<Mat4>    m_ShadowViewProjections;
        
         // pbr
         PBR* m_PBR;
         unsigned int m_PBREnvironmentIndex;
-        std::vector<Vec4> m_ProbeSpatials;
+        List<Vec4> m_ProbeSpatials;
 
         // ubo
         unsigned int m_GlobalUBO;
@@ -141,7 +143,7 @@ namespace NURU
         void RenderCustomCommand(RenderCommand* command, Camera* customCamera, bool updateGLSettings = true);
         // renderer-specific logic for rendering a list of commands to a target cubemap
         void RenderToCubemap(SceneNode* scene, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
-        void RenderToCubemap(std::vector<RenderCommand>& renderCommands, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
+        void RenderToCubemap(List<RenderCommand>& renderCommands, TextureCube* target, Vec3 position = Vec3(0.0f), unsigned int mipLevel = 0);
         // minimal render logic to render a mesh 
         void RenderMesh(Mesh* mesh, Shader* shader);
         // updates the global uniform buffer objects

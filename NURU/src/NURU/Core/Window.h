@@ -13,8 +13,8 @@ namespace NURU {
 	unsigned int Height;
 
 	WindowProps(const std::string& title = "NURU Editor",
-		    unsigned int width = 1280,
-		    unsigned int height = 720)
+		    unsigned int width = 1600,
+		    unsigned int height = 900)
 	    : Title(title), Width(width), Height(height)
 	    {
 	    }
@@ -39,6 +39,7 @@ namespace NURU {
 
         // Mouse attributes
         virtual void SetCursorEnabled(bool enabled) = 0;
+        virtual void ToggleCursorEnabled() = 0;
 
         virtual void* GetNativeWindow() const = 0;
 

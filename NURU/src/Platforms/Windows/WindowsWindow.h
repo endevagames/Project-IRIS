@@ -22,7 +22,8 @@ namespace NURU {
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 
 		// Mouse attributes
-		inline void SetCursorEnabled(bool enabled) { glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
+		inline void ToggleCursorEnabled() {  auto cursorStatus = glfwGetInputMode(m_Window, GLFW_CURSOR); glfwSetInputMode(m_Window, GLFW_CURSOR, cursorStatus == GLFW_CURSOR_NORMAL ? GLFW_CURSOR_DISABLED : cursorStatus = GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : cursorStatus); }
+		inline void SetCursorEnabled(bool enabled) { glfwSetInputMode(m_Window, GLFW_CURSOR, enabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED); }
 
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;

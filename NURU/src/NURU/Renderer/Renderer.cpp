@@ -88,7 +88,7 @@ namespace NURU
         m_GLCache.SetCull(true);
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-        glViewport(0.0f, 0.0f, m_RenderSize.x, m_RenderSize.y);
+        glViewport(0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClearDepth(1.0f);
 
@@ -133,15 +133,15 @@ namespace NURU
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_GlobalUBO);
 
         // default PBR pre-compute (get a more default oriented HDR map for this)
-        Texture *hdrMap = Resources::LoadHDR("sky env", "textures/backgrounds/alley.hdr");
+        Texture *hdrMap = Resources::LoadHDR("sky env", "C:/Users/Sammi3/_gamedev/_projects/__IRIS/DemoScene/small_cave_4k.hdr");
         PBRCapture *envBridge = m_PBR->ProcessEquirectangular(hdrMap);
         SetSkyCapture(envBridge);
     }
     // ------------------------------------------------------------------------
     void Renderer::SetRenderSize(unsigned int width, unsigned int height)
     {
-        m_RenderSize.x = width;
-        m_RenderSize.y = height;
+        m_RenderSize.x = (float)width;
+        m_RenderSize.y = (float)height;
 
         m_GBuffer->Resize(width, height);
 
@@ -289,7 +289,7 @@ namespace NURU
 
         // 1. Geometry buffer
         std::vector<RenderCommand> deferredRenderCommands = m_CommandBuffer->GetDeferredRenderCommands(true);
-        glViewport(0, 0, m_RenderSize.x, m_RenderSize.y);
+        glViewport(0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y);
         glBindFramebuffer(GL_FRAMEBUFFER, m_GBuffer->ID);
         unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
         glDrawBuffers(4, attachments);
@@ -329,7 +329,7 @@ namespace NURU
                     Mat4 lightProjection = NURU::Orthographic(-20.0f, 20.0f, 20.0f, -20.0f, -15.0f, 20.0f);
                     Mat4 lightView = NURU::LookAt(-light->Direction * 10.0f, Vec3(0.0), Vec3::UP);
                     m_DirectionalLights[i]->LightSpaceViewProjection = lightProjection * lightView;
-                    m_DirectionalLights[i]->ShadowMapRT = m_ShadowRenderTargets[shadowRtIndex];
+                              m_DirectionalLights[i]->ShadowMapRT = m_ShadowRenderTargets[shadowRtIndex];
                     for (int j = 0; j < shadowRenderCommands.size(); ++j)
                     {
                         RenderShadowCastCommand(&shadowRenderCommands[j], lightProjection, lightView);
@@ -390,7 +390,7 @@ namespace NURU
         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_GBuffer->ID);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_CustomTarget->ID); // write to default framebuffer
         glBlitFramebuffer(
-            0, 0, m_GBuffer->Width, m_GBuffer->Height, 0, 0, m_RenderSize.x, m_RenderSize.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+            0, 0, m_GBuffer->Width, m_GBuffer->Height, 0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST
         );
 
         // 6. custom forward render pass 
@@ -410,16 +410,15 @@ namespace NURU
                     glClear(GL_COLOR_BUFFER_BIT);
                 m_Camera->SetPerspective(m_Camera->FOV, 
                                          (float)renderTarget->Width / (float)renderTarget->Height, 
-                                         0.1, 100.0f); 
+                                         0.1f, 100.0f); 
             }
             else
             {
                 // don't render to default framebuffer, but to custom target framebuffer which 
                 // we'll use for post-processing.
-                glViewport(0, 0, m_RenderSize.x, m_RenderSize.y);
+                glViewport(0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y);
                 glBindFramebuffer(GL_FRAMEBUFFER, m_CustomTarget->ID);
-                m_Camera->SetPerspective(m_Camera->FOV, m_RenderSize.x / m_RenderSize.y, 0.1, 
-                                         100.0f);
+                m_Camera->SetPerspective(m_Camera->FOV, m_RenderSize.x / m_RenderSize.y, 0.1f, 100.0f);
             }
 
             // sort all render commands and retrieve the sorted array
@@ -435,7 +434,7 @@ namespace NURU
         }
 
         // 7. alpha material pass
-        glViewport(0, 0, m_RenderSize.x, m_RenderSize.y);
+        glViewport(0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y);
         glBindFramebuffer(GL_FRAMEBUFFER, m_CustomTarget->ID);
         std::vector<RenderCommand> alphaRenderCommands = m_CommandBuffer->GetAlphaRenderCommands(true);
         for (unsigned int i = 0; i < alphaRenderCommands.size(); ++i)
@@ -466,7 +465,7 @@ namespace NURU
         m_PostProcessor->ProcessPostLighting(this, m_GBuffer, m_CustomTarget, m_Camera);
 
         // 9. render debug visuals
-        glViewport(0, 0, m_RenderSize.x, m_RenderSize.y);
+        glViewport(0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y);
         glBindFramebuffer(GL_FRAMEBUFFER, m_CustomTarget->ID);
         if (LightVolumes)
         {
@@ -538,7 +537,7 @@ namespace NURU
         else
         {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glViewport(0, 0, m_RenderSize.x, m_RenderSize.y);
+            glViewport(0, 0, (GLsizei)m_RenderSize.x, (GLsizei)m_RenderSize.y);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }
         // if no material is given, use default blit material
@@ -781,17 +780,17 @@ namespace NURU
         };
 
         // resize target dimensions based on mip level we're rendering.
-        float width = (float)target->FaceWidth * pow(0.5, mipLevel);
-        float height = (float)target->FaceHeight * pow(0.5, mipLevel);
+        float width  = (float)(target->FaceWidth * pow(0.5, mipLevel));
+        float height = (float)(target->FaceHeight * pow(0.5, mipLevel));
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferCubemap);
         glBindRenderbuffer(GL_RENDERBUFFER, m_CubemapDepthRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, (GLsizei)width, (GLsizei)height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
             m_CubemapDepthRBO);
 
         // resize relevant buffers
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, (GLsizei)width, (GLsizei)height);
         glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferCubemap);
 
         for (unsigned int i = 0; i < 6; ++i)
@@ -815,11 +814,11 @@ namespace NURU
         glBindVertexArray(mesh->m_VAO);
         if (mesh->Indices.size() > 0)
         {
-            glDrawElements(mesh->Topology == TRIANGLE_STRIP ? GL_TRIANGLE_STRIP : GL_TRIANGLES, mesh->Indices.size(), GL_UNSIGNED_INT, 0);
+            glDrawElements(mesh->Topology == TRIANGLE_STRIP ? GL_TRIANGLE_STRIP : GL_TRIANGLES, (GLsizei)mesh->Indices.size(), GL_UNSIGNED_INT, (void *)0);
         }
         else
         {
-            glDrawArrays(mesh->Topology == TRIANGLE_STRIP ? GL_TRIANGLE_STRIP : GL_TRIANGLES, 0, mesh->Positions.size());
+            glDrawArrays(mesh->Topology == TRIANGLE_STRIP ? GL_TRIANGLE_STRIP : GL_TRIANGLES, 0, (int)mesh->Positions.size());
         }
     }
     // --------------------------------------------------------------------------------------------

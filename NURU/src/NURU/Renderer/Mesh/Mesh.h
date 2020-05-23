@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <functional>
+
+#include "NURU/Core/Core.h"
 
 #include "Math/Linear/Matrix.h"
 #include "Math/Linear/Vector.h"
@@ -42,28 +43,28 @@ namespace NURU
         unsigned int m_VBO;
         unsigned int m_EBO;
     public:
-        std::vector<Vec3> Positions;
-        std::vector<Vec2> UV;
-        std::vector<Vec3> Normals;
-        std::vector<Vec3> Tangents;
-        std::vector<Vec3> Bitangents;
+        List<Vec3> Positions;
+        List<Vec2> UV;
+        List<Vec3> Normals;
+        List<Vec3> Tangents;
+        List<Vec3> Bitangents;
 
         TOPOLOGY Topology = TRIANGLES;
-        std::vector<unsigned int> Indices;
+        List<unsigned int> Indices;
 
         // support multiple ways of initializing a mesh
         Mesh();
-        Mesh(std::vector<Vec3> positions, std::vector<unsigned int> indices);
-        Mesh(std::vector<Vec3> positions, std::vector<Vec2> uv, std::vector<unsigned int> indices);
-        Mesh(std::vector<Vec3> positions, std::vector<Vec2> uv, std::vector<Vec3> normals, std::vector<unsigned int> indices);
-        Mesh(std::vector<Vec3> positions, std::vector<Vec2> uv, std::vector<Vec3> normals, std::vector<Vec3> tangents, std::vector<Vec3> bitangents, std::vector<unsigned int> indices);
+        Mesh(List<Vec3> positions, List<unsigned int> indices);
+        Mesh(List<Vec3> positions, List<Vec2> uv, List<unsigned int> indices);
+        Mesh(List<Vec3> positions, List<Vec2> uv, List<Vec3> normals, List<unsigned int> indices);
+        Mesh(List<Vec3> positions, List<Vec2> uv, List<Vec3> normals, List<Vec3> tangents, List<Vec3> bitangents, List<unsigned int> indices);
 
         // set vertex data manually
         // TODO(Joey): not sure if these are required if we can directly set vertex data from public fields; construct several use-cases to test.
-        void SetPositions(std::vector<Vec3> positions);
-        void SetUVs(std::vector<Vec2> uv);
-        void SetNormals(std::vector<Vec3> normals);
-        void SetTangents(std::vector<Vec3> tangents, std::vector<Vec3> bitangents); // NOTE(Joey): you can only set both tangents and bitangents at the same time to prevent mismatches
+        void SetPositions(List<Vec3> positions);
+        void SetUVs(List<Vec2> uv);
+        void SetNormals(List<Vec3> normals);
+        void SetTangents(List<Vec3> tangents, List<Vec3> bitangents); // NOTE(Joey): you can only set both tangents and bitangents at the same time to prevent mismatches
 
         // commits all buffers and attributes to the GPU driver
         void Finalize(bool interleaved = true);

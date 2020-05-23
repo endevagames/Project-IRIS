@@ -5,20 +5,20 @@
 namespace NURU
 {
     // --------------------------------------------------------------------------------------------
-    Plane::Plane(unsigned int xSegments, unsigned int ySegments)
+    Plane :: Plane(unsigned int xSegments, unsigned int ySegments, unsigned int size)
     {
         bool oddRow = false;
 
-        float dX = 1.0f / xSegments;
-        float dY = 1.0f / ySegments;
+        float dX = (float)size  / xSegments;
+        float dY = (float)size / ySegments;
 
         for (int y = 0; y <= ySegments; ++y)
         {
             for (int x = 0; x <= xSegments; ++x)
             {
-                Positions.push_back(Vec3(dX * x * 2.0f - 1.0f, dY * y * 2.0f - 1.0f, 0.0f));
+                Positions.push_back(Vec3(dX * x * 2.0f - 1.0f, 0.0f, dY * y * 2.0f - 1.0f));
                 UV.push_back(Vec2(dX * x, 1.0f - y * dY));
-                Normals.push_back(Vec3(0.0f, 0.0f, 1.0f));
+                Normals.push_back(Vec3::UP);
             }
         }
 

@@ -61,6 +61,8 @@ namespace NURU
 
     void ImGuiLayer :: OnImGuiRender()
     {
+        static bool showDemoWindow = true;
+        ImGui::ShowDemoWindow(&showDemoWindow);
     }
 
     void ImGuiLayer :: OnEvent(Event& e)

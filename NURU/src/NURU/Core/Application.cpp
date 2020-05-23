@@ -1,22 +1,20 @@
 #include <NURUPCH.h>
 
-#include "NURU/Core/Application.h"
-#include "NURU/Core/Input.h"
-
 #include "Math/NURUMath.h"
+
+#include "Application.h"
+#include "Input.h"
+
+#include "NURU/ImGui/ImGuiLayer.h"
 
 #include "NURU/Renderer/Camera/FlyCamera.h"
 #include "NURU/Renderer/Renderer.h"
 #include "NURU/Renderer/Resources/Resources.h"
+#include "NURU/Renderer/Scene/Background.h"
 #include "NURU/Renderer/Scene/Scene.h"
-#include "NURU/Renderer/Scene/SceneNode.h"
-
-#define IVIEW(x) Do(#x, x);
-
-void Do(const char* xStr, int& x) {
-    NURU_CORE_INFO("{0} : {1}", xStr, x);
-    ++x;
-}
+#include "NURU/Renderer/Mesh/Terrain.h"
+#include "NURU/Renderer/Mesh/Cube.h"
+#include "NURU/Renderer/Resources/Resources.h"
 
 namespace NURU 
 {
@@ -34,16 +32,17 @@ namespace NURU
 
         m_Renderer = new Renderer();
         m_Renderer->Init();
-        m_Renderer->SetRenderSize(1920, 1080);
+        m_Renderer->SetRenderSize(1600, 900);
 
         m_Camera = new FlyCamera(Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, 0.0f, -1.0f));
         m_Camera->SetPerspective(Deg2Rad(60.0f), m_Renderer->GetRenderSize().x / m_Renderer->GetRenderSize().y, 0.1f, 100.0f);
+
         m_Renderer->SetCamera(m_Camera);
 
         DirectionalLight* dirLight = new DirectionalLight();
-        dirLight->Direction = Vec3(0.2f, -1.0f, 0.25f);
-        dirLight->Color = NURU::Vec3(1.0f, 0.89f, 0.7f);
-        dirLight->Intensity = 50.0f;
+        dirLight->Direction = Vec3(-0.2f, -1.0f, -0.25f);
+        dirLight->Color = Vec3(0.8f, 0.6f, 1.0f);
+        dirLight->Intensity = 100.0f;
         m_Renderer->AddLight(dirLight);
 
         m_ImGuiLayer = new ImGuiLayer();
@@ -51,11 +50,23 @@ namespace NURU
         PushOverlay(m_ImGuiLayer);
 
         if (m_Renderer == NULL) 
-                m_Running = false;
+            m_Running = false;
 
-        SceneNode* sponza = Resources::LoadMesh(m_Renderer, "sponza", "meshes/sponza/sponza.obj");
-        sponza->SetPosition(NURU::Vec3(0.0, -1.0, 0.0));
-        sponza->SetScale(0.01f);
+        Background* background = new Background;
+        PBRCapture *pbrEnv = m_Renderer->GetSkypCature();
+        background->SetCubemap(pbrEnv->Prefiltered);
+	    float lodLevel = 1.5f; 
+	    background->Material->SetFloat("lodLevel", lodLevel);
+        
+        Material * m = m_Renderer->CreateCustomMaterial(Resources::LoadShader("terrain", "shaders/deferred/terrain.vs", "shaders/deferred/terrain.fs"));
+        m->Type = MATERIAL_DEFAULT;
+        m->SetTexture("TexAlbedo", Resources::LoadTexture("terrain albedo", "C:/Users/Sammi3/_gamedev/_projects/__IRIS/DemoScene/TerrainGreenHill/BaseColor.png", GL_TEXTURE_2D, GL_RGB), 3);
+        m->SetTexture("TexNormal", Resources::LoadTexture("terrain normal", "C:/Users/Sammi3/_gamedev/_projects/__IRIS/DemoScene/TerrainGreenHill/BaseNormal.png"), 4);
+        m->SetTexture("TexMetallic", Resources::LoadTexture("terrain metallic", "C:/Users/Sammi3/_gamedev/_projects/__IRIS/DemoScene/TerrainGreenHill/BaseMetallic.png"), 5);
+        m->SetTexture("TexRoughness", Resources::LoadTexture("terrain roughness", "C:/Users/Sammi3/_gamedev/_projects/__IRIS/DemoScene/TerrainGreenHill/BaseRoughness.png"), 6);
+        
+        auto terrainMesh = new Terrain();
+        auto terrain = Scene::MakeSceneNode(terrainMesh, m);
     }
 
     Application :: ~Application() 
@@ -91,7 +102,7 @@ namespace NURU
 
     void Application :: Run() 
     {
-        while ( m_Running ) 
+        while (m_Running) 
         {
             auto dt = (float)m_Window->UpdateDeltaTime();
 
@@ -107,6 +118,9 @@ namespace NURU
                 m_Camera->InputKey(dt, CAMERA_UP);
             if (Input::IsKeyPressed(Key::Q))
                 m_Camera->InputKey(dt, CAMERA_DOWN);
+
+            if (Input::IsKeyPressed(Key::LeftControl))
+                m_Window->ToggleCursorEnabled();
 
             auto [mouseX, mouseY] = Input::GetMousePosition();
             auto [xOffset, yOffset] = [](float xpos, float ypos) {
@@ -138,17 +152,17 @@ namespace NURU
             for(Layer* layer : m_LayerStack)
                 layer->OnUpdate();
 
+            // Render a new frame
+            m_Renderer->NewFrame();
+            m_Renderer->PushRender(Scene::Root);
+            m_Renderer->EndFrame();
+
             m_ImGuiLayer->Begin();
                 for(Layer* layer : m_LayerStack)
                     layer->OnImGuiRender();
             m_ImGuiLayer->End();
 
-            m_Renderer->NewFrame();
-
-            m_Renderer->PushRender(Scene::Root);
-
-            m_Renderer->EndFrame();
-
+            // Update window, swap back and front buffers
             m_Window->OnUpdate();
 	    }
         

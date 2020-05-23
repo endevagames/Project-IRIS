@@ -19,6 +19,7 @@ namespace NURU
         Renderer* m_Renderer;
         FlyCamera* m_Camera;
         bool m_Running = true;
+        List<PointLight> torchLights;
     public:
         Application(/* args */);
         virtual ~Application();

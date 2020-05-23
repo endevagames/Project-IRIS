@@ -5,17 +5,17 @@
 namespace NURU
 {
     // --------------------------------------------------------------------------------------------
-    Texture::Texture()
+    Texture :: Texture()
     {
         
     }
     // --------------------------------------------------------------------------------------------
-    Texture::~Texture()
+    Texture :: ~Texture()
     {
 
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::Generate(unsigned int width, GLenum internalFormat, GLenum format, GLenum type, void* data)
+    void Texture :: Generate(unsigned int width, GLenum internalFormat, GLenum format, GLenum type, void* data)
     {
         glGenTextures(1, &ID);
 
@@ -37,7 +37,7 @@ namespace NURU
         Unbind();
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::Generate(unsigned int width, unsigned int height, GLenum internalFormat, GLenum format, GLenum type, void* data)
+    void Texture :: Generate(unsigned int width, unsigned int height, GLenum internalFormat, GLenum format, GLenum type, void* data)
     {
         glGenTextures(1, &ID);
 
@@ -60,7 +60,7 @@ namespace NURU
         Unbind();
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::Generate(unsigned int width, unsigned int height, unsigned int depth, GLenum internalFormat, GLenum format, GLenum type, void* data)
+    void Texture :: Generate(unsigned int width, unsigned int height, unsigned int depth, GLenum internalFormat, GLenum format, GLenum type, void* data)
     {
         glGenTextures(1, &ID);
 
@@ -84,7 +84,7 @@ namespace NURU
         Unbind();
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::Resize(unsigned int width, unsigned int height, unsigned int depth)
+    void Texture :: Resize(unsigned int width, unsigned int height, unsigned int depth)
     {
         Bind();
         if (Target == GL_TEXTURE_1D)
@@ -103,19 +103,19 @@ namespace NURU
         }
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::Bind(int unit)
+    void Texture :: Bind(int unit)
     {
         if(unit >= 0)
             glActiveTexture(GL_TEXTURE0 + unit);
         glBindTexture(Target, ID);
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::Unbind()
+    void Texture :: Unbind()
     {
         glBindTexture(Target, 0);
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::SetWrapMode(GLenum wrapMode, bool bind)
+    void Texture :: SetWrapMode(GLenum wrapMode, bool bind)
     {
         if(bind)
             Bind();
@@ -142,14 +142,14 @@ namespace NURU
         }
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::SetFilterMin(GLenum filter, bool bind)
+    void Texture :: SetFilterMin(GLenum filter, bool bind)
     {
         if(bind)
             Bind();
         glTexParameteri(Target, GL_TEXTURE_MIN_FILTER, filter);
     }
     // --------------------------------------------------------------------------------------------
-    void Texture::SetFilterMax(GLenum filter, bool bind)
+    void Texture :: SetFilterMax(GLenum filter, bool bind)
     {
         if (bind)
             Bind();

@@ -69,7 +69,9 @@ project "NURU"
         "%{IncludeDir.Stb}",
         "%{IncludeDir.Assimp}",
         "%{IncludeDir.AssimpBuild}",
-        "%{IncludeDir.ImGui}"
+        "%{IncludeDir.ImGui}",
+        "C:/DEV/vendor/PhysX/physx/include",
+        "C:/DEV/vendor/PhysX/pxshared/include"
     }
 
     links 
@@ -78,33 +80,57 @@ project "NURU"
         "GLFW",
         "Glad",
         "opengl32.lib",
-        "ImGui"
+        "ImGui",        
     }
 
     filter "system:windows"
         systemversion "latest"
-
         defines 
         {
             "NURU_PLATFORM_WINDOWS",
-            "_WIN32"
+            "_WIN32",
+            "WIN32"
         }
 
 
     filter "configurations:Debug"
-        defines "NURU_DEBUG"
         symbols "on"
         runtime "Debug"
+        defines
+        {
+            "NURU_DEBUG",
+            "DEBUG"
+        }
+        links
+        {
+            "C:/DEV/vendor/PhysX/physx/bin/win.x86_64.vc142.mt/debug/**.lib",
+        }
 
     filter "configurations:Release"
-        defines "NURU_RELEASE"
         optimize "on"
         runtime "Release"
+        defines
+        {
+            "NURU_RELEASE",
+            "NDEBUG"
+        }
+        links
+        {
+            "C:/DEV/vendor/PhysX/physx/bin/win.x86_64.vc142.mt/release/**.lib",
+        }
 
     filter "configurations:Dist"
         defines "NURU_DIST"
         optimize "on"
         runtime "Release"
+        defines
+        {
+            "NDEBUG"
+        }
+        links
+        {
+            "C:/DEV/vendor/PhysX/physx/bin/win.x86_64.vc142.mt/release/**.lib",
+        }
 
 project "Sandbox"
     location "Sandbox"
@@ -123,7 +149,8 @@ project "Sandbox"
         "**.ico"
     }
 
-    includedirs {
+    includedirs 
+    {
         "NURU/src",
         "NURU/vendor/spdlog/include/",
         "%{IncludeDir.Glad}", 
@@ -131,7 +158,7 @@ project "Sandbox"
         "%{IncludeDir.Stb}",
         "%{IncludeDir.Assimp}",
         "%{IncludeDir.AssimpBuild}",
-        "%{IncludeDir.ImGui}"
+        "%{IncludeDir.ImGui}",
     }
 
     links 
@@ -155,7 +182,7 @@ project "Sandbox"
         runtime "Debug"
 
     filter "configurations:Release"
-        kind "WindowedApp"
+        kind "ConsoleApp"
         defines "NURU_RELEASE"
         optimize "on"
         runtime "Release"

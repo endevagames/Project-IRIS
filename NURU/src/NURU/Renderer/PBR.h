@@ -12,7 +12,7 @@ namespace NURU
     class RenderTarget;
     class Texture;
     class TextureCube;
-    class PBRCapture;
+    struct PBRCapture;
     class SceneNode;
     class Shader;
     class PostProcessor;
